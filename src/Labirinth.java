@@ -1,39 +1,93 @@
 import java.util.Random;
 
 public class Labirinth {
-    private int[][] L;
+    private char[][] L;
     private int size;
+    private int len;
 
-    public Labirinth(int size){
+    public Labirinth(int size) {
         this.size = size;
-        L = new int[size][size];
-        L = genLabirinth();
+        this.len = size*2+1;
+        // Matriz com tamanho necessário para marcar paredes do labirinto
+        L = new char[len][len];
+        genLabirinth();
     }
 
-    private int[][] genLabirinth() {
-        int[][] lab = new int[size][size];
+    private void genLabirinth() {
+        // Marca todas as posiçoes como não visitadas
+        for (int i = 0; i < len; i++) {
+            L[0][i] = '-';
+        }
+        for (int i = 0; i < len; i++) {
+            L[len-1][i] = '-';
+        }
+        for (int i = 0; i < len; i++) {
+           L[i][0] =  '|';
+        }
+        for (int i = 0; i < len; i++) {
+           L[i][len - 1] =  '|';
+        }
+        for (int i = 1; i < len-1; i++) {
+            for (int j = 1; j < len-1; j++) {
+                if (i % 2 == 0 )
+                    if(j%2 == 0)
+                        L[i][j] = '+';
+                    else
+                        L[i][j] = '-';
+                else if (j % 2 == 0)
+                    L[i][j] = '|';
+                else
+                    L[i][j] = ' ';
+            }
+        }
+
+        // Define a posição inicial do labirinto
         Random random = new Random();
-        int[] start = new int[2];
-        int[] end = new int[2];
-        int TOP = 0, BOTTOM = 1, LEFT = 2, RIGHT = 3;
-        
-        start[0] = random.nextInt(size-1);
-        start[1] = random.nextInt(3);
-        end[0] = random.nextInt(size-1);
-        end[1] = random.nextInt(3);
-
-        System.out.println(start[0] + " " + start[1] + " " + end[0] + " " + end[1]);
-        return lab;
+        int side, pos;
+        // x = row   y = column
+        int x = 0, y = 0;
+        // Posição
+        pos = random.nextInt(size);
+        pos = pos*2+1;
+        // Lado que o labirinto começa
+        side = random.nextInt(3);
+        switch (side) {
+            //TOP
+            case 0:
+                x = 0;
+                y = pos;
+                break;
+            //RIGHT
+            case 1:
+                x = pos;
+                y = len-1;
+                break;
+            //BOTTOM
+            case 2:
+                x = len-1;
+                y = pos;
+                break;
+            //LEFT
+            case 3:
+                x = pos;
+                y = 0;
+                break;
+        }
+        L[x][y] = ' ';
     }
 
-    public int[][] getLabirinth() {
+    private void walk(){
+        // Anda no labirinto abrindo caminhos
+    }
+
+    public char[][] getLabirinth() {
         return L;
     }
 
     public void printLabirinth() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                System.out.print(L[i][j] + " ");
+        for (int i = 0; i < len ; i++) {
+            for (int j = 0; j < len; j++) {
+                System.out.print(L[i][j]);
             }
             System.out.println();
         }
