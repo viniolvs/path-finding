@@ -78,7 +78,7 @@ public class PathFinder {
             next_pos.remove(0);
 
             // Verifica se é possível seguir para o próximo lado
-            if(next_x >= 0 && next_x < len && next_y >= 0 && next_y < len && L[next_x][next_y] == ' '){
+            if(next_x >= 0 && next_x < len && next_y >= 0 && next_y < len && (L[next_x][next_y] == ' ' || L[next_x][next_y] == 's')){
                 // Chamada recursiva para o próximo 
                 depthSearch(next_x, next_y, new LinkedList<int[]>());
             }

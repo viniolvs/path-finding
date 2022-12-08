@@ -87,7 +87,7 @@ public class Labirinth {
         this.xy_start[0] = temp_x;
         this.xy_start[1] = temp_y;
         //Marca a entrada no labirinto
-        L[temp_x][temp_y] = ' ';
+        L[temp_x][temp_y] = 'e';
 
         //Define a saída do labirinto
         int x2 = 0, y2 = 0;
@@ -121,7 +121,7 @@ public class Labirinth {
         this.xy_finish[0] = x2;
         this.xy_finish[1] = y2;
         // Marca a saída no labirinto
-        L[x2][y2] = ' ';
+        L[x2][y2] = 's';
 
         int[][] vis = new int[size][size];
         vis = walk((x - 1) / 2, (y - 1) / 2, vis, new LinkedList<int[]>());
@@ -217,8 +217,6 @@ public class Labirinth {
     }
 
     public void printLabirinth() {
-        System.out.println("Entrada(linha e coluna) = " + xy_start[0] + " " + xy_start[1]);
-        System.out.println("Saída(linha e coluna) = " + xy_finish[0] + " " + xy_finish[1]);
         for (int i = 0; i < len; i++) {
             for (int j = 0; j < len; j++) {
                 System.out.print(L[i][j]);
