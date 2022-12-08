@@ -1,15 +1,18 @@
 import java.util.LinkedList;
 import java.util.Random;
 
-
 public class Labirinth {
     private char[][] L;
-    private int size;
-    private int len;
+    private int[] xy_start; // Coordenada da entrada do labirinto 
+    private int[] xy_finish; // Coordenada da saída do labirinto
+    private int size; // Tamanho do labirinto
+    private int len; // Tamanho da matriz que representa o labirinto
 
     public Labirinth(int size) {
         this.size = size;
         this.len = size * 2 + 1;
+        xy_start = new int[2];
+        xy_finish = new int[2];
         // Matriz com tamanho necessário para marcar paredes do labirinto
         L = new char[len][len];
         genLabirinth();
@@ -17,17 +20,14 @@ public class Labirinth {
 
     private void genLabirinth() {
         // Inicializa o labirinto
-        for (int i = 0; i < len; i++) {
+        int k = 1;
+        for (int i = 0; i < len; i++, k++) {
             L[0][i] = 'X';
-        }
-        for (int i = 0; i < len; i++) {
             L[len - 1][i] = 'X';
-        }
-        for (int i = 0; i < len; i++) {
-            L[i][0] = '|';
-        }
-        for (int i = 0; i < len; i++) {
-            L[i][len - 1] = '|';
+            if (k < len - 1){
+                L[k][0] = '|';
+                L[k][len - 1] = '|';
+            }
         }
         for (int i = 1; i < len - 1; i++) {
             for (int j = 1; j < len - 1; j++) {
@@ -47,7 +47,8 @@ public class Labirinth {
         Random random = new Random();
         int side, pos;
         // x = row y = column
-        int x = 0, y = 0, temp_x = 0, temp_y = 0;
+        int x = 0, y = 0; //coordenadas para a matriz de visitados
+        int temp_x = 0, temp_y = 0; //Coordenadas para a matriz labirinto
         // Posição
         pos = random.nextInt(size);
         pos = pos * 2 + 1;
@@ -83,13 +84,50 @@ public class Labirinth {
                 temp_y = 0;
                 break;
         }
+        this.xy_start[0] = temp_x;
+        this.xy_start[1] = temp_y;
+        //Marca a entrada no labirinto
         L[temp_x][temp_y] = ' ';
+
+        //Define a saída do labirinto
+        int x2 = 0, y2 = 0;
+        // Posição
+        pos = random.nextInt(size);
+        pos = pos * 2 + 1;
+        // Lado que o labirinto começa
+        side = random.nextInt(3);
+        switch (side) {
+            // TOP
+            case 0:
+                x2 = 0;
+                y2 = pos;
+                break;
+            // RIGHT
+            case 1:
+                x2 = pos;
+                y2 = len - 1;
+                break;
+            // BOTTOM
+            case 2:
+                x2 = len - 1;
+                y2 = pos;
+                break;
+            // LEFT
+            case 3:
+                x2 = pos;
+                y2 = 0;
+                break;
+        }
+        this.xy_finish[0] = x2;
+        this.xy_finish[1] = y2;
+        // Marca a saída no labirinto
+        L[x2][y2] = ' ';
 
         int[][] vis = new int[size][size];
         vis = walk((x - 1) / 2, (y - 1) / 2, vis, new LinkedList<int[]>());
     }
 
-    // Abre os caminhos no labirinto utilizando busca em profundidade
+    // Abre os caminhos no labirinto utilizando busca em profundidade aleatória
     private int[][] walk(int x, int y, int[][] vis, LinkedList<int[]> next_pos){
         vis[x][y] = 1;
 
@@ -142,9 +180,8 @@ public class Labirinth {
 
             // Verifica se é possível seguir para o lado sorteado
             if(next_x >= 0 && next_x < size && next_y >= 0 && next_y < size && vis[next_x][next_y] == 0){
-                int temp_x = next_x*2+1, temp_y = next_y*2+1;
-                // Atualiza as coordenadas para o próximo
                 // Abre o caminho no labirinto
+                int temp_x = next_x*2+1, temp_y = next_y*2+1;
                 switch (str) {
                     case "TOP":
                         L[temp_x + 1][temp_y] = ' ';
@@ -169,13 +206,24 @@ public class Labirinth {
     public char[][] getLabirinth() {
         return L;
     }
+    public int[] getStart() {
+        return xy_start;
+    }
+    public int[] getFinish() {
+        return xy_finish;
+    }
+    public int getLen() {
+        return len;
+    }
 
     public void printLabirinth() {
+        System.out.println("Entrada(linha e coluna) = " + xy_start[0] + " " + xy_start[1]);
+        System.out.println("Saída(linha e coluna) = " + xy_finish[0] + " " + xy_finish[1]);
         for (int i = 0; i < len; i++) {
             for (int j = 0; j < len; j++) {
                 System.out.print(L[i][j]);
             }
             System.out.println();
         }
-    }
+    }    
 }
