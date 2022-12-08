@@ -2,11 +2,13 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class Labirinth {
-    private char[][] L;
-    private int[] xy_start; // Coordenada da entrada do labirinto 
+    private char[][] L; // Matriz que contém o labirinto
+    private char[][] path; // Matriz que contém o labirinto solucionado
+    private int[] xy_start; // Coordenada da entrada do labirinto
     private int[] xy_finish; // Coordenada da saída do labirinto
     private int size; // Tamanho do labirinto
     private int len; // Tamanho da matriz que representa o labirinto
+    private PathFinder pathFinder;
 
     public Labirinth(int size) {
         this.size = size;
@@ -15,7 +17,66 @@ public class Labirinth {
         xy_finish = new int[2];
         // Matriz com tamanho necessário para marcar paredes do labirinto
         L = new char[len][len];
+        path = new char[len][len];
+        //Algoritmo solucionador padrão
+        pathFinder = new DepthSearch(this);
         genLabirinth();
+
+    }
+
+    public void setPathFinder(PathFinder pathFinder) {
+        this.pathFinder = pathFinder;
+    }
+
+    public int findPath() {
+        return pathFinder.find();
+    }
+
+    public char[][] getLabirinth() {
+        return L;
+    }
+
+    public char[][] getPath() {
+        return path;
+    }
+
+    public int[] getStart() {
+        return xy_start;
+    }
+
+    public int[] getFinish() {
+        return xy_finish;
+    }
+
+    public int getLen() {
+        return len;
+    }
+
+    public void restartPath() {
+        // Copia o labirinto para a matriz que conterá a solução
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                path[i][j] = L[i][j];
+            }
+        }
+    }
+
+    public void printLabirinth() {
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                System.out.print(L[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    public void printPath() {
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                System.out.print(path[i][j]);
+            }
+            System.out.println();
+        }
     }
 
     private void genLabirinth() {
@@ -24,7 +85,7 @@ public class Labirinth {
         for (int i = 0; i < len; i++, k++) {
             L[0][i] = 'X';
             L[len - 1][i] = 'X';
-            if (k < len - 1){
+            if (k < len - 1) {
                 L[k][0] = '|';
                 L[k][len - 1] = '|';
             }
@@ -47,8 +108,8 @@ public class Labirinth {
         Random random = new Random();
         int side, pos;
         // x = row y = column
-        int x = 0, y = 0; //coordenadas para a matriz de visitados
-        int temp_x = 0, temp_y = 0; //Coordenadas para a matriz labirinto
+        int x = 0, y = 0; // coordenadas para a matriz de visitados
+        int temp_x = 0, temp_y = 0; // Coordenadas para a matriz labirinto
         // Posição
         pos = random.nextInt(size);
         pos = pos * 2 + 1;
@@ -86,10 +147,10 @@ public class Labirinth {
         }
         this.xy_start[0] = temp_x;
         this.xy_start[1] = temp_y;
-        //Marca a entrada no labirinto
+        // Marca a entrada no labirinto
         L[temp_x][temp_y] = 'e';
 
-        //Define a saída do labirinto
+        // Define a saída do labirinto
         int x2 = 0, y2 = 0;
         // Posição
         pos = random.nextInt(size);
@@ -124,64 +185,65 @@ public class Labirinth {
         L[x2][y2] = 's';
 
         int[][] vis = new int[size][size];
-        vis = walk((x - 1) / 2, (y - 1) / 2, vis, new LinkedList<int[]>());
+        walk((x - 1) / 2, (y - 1) / 2, vis, new LinkedList<int[]>());
+        restartPath();
     }
 
     // Abre os caminhos no labirinto utilizando busca em profundidade aleatória
-    private int[][] walk(int x, int y, int[][] vis, LinkedList<int[]> next_pos){
+    private void walk(int x, int y, int[][] vis, LinkedList<int[]> next_pos) {
         vis[x][y] = 1;
-
         // Adiciona todas as possibilidades de movimentaçao em uma Lista
         for (int i = 0; i < 4; i++) {
             int[] xy = new int[2];
-            xy[0] = x; xy[1] = y;
+            xy[0] = x;
+            xy[1] = y;
             switch (i) {
-                //TOP
+                // TOP
                 case 0:
                     xy[0] = x - 1;
                     break;
-                //RIGHT
+                // RIGHT
                 case 1:
                     xy[1] = y + 1;
                     break;
-                //BOTTOM
+                // BOTTOM
                 case 2:
                     xy[0] = x + 1;
                     break;
-                //LEFT
+                // LEFT
                 case 3:
                     xy[1] = y - 1;
                     break;
             }
             next_pos.push(xy);
         }
-        
+
         Random random = new Random();
-        while(next_pos.size() > 0){
-            //sorteia o próximo caminho a ser seguido
+        while (next_pos.size() > 0) {
+            // sorteia o próximo caminho a ser seguido
             int next = random.nextInt(next_pos.size());
             // Verifica o lado que a busca continuará
             String str = new String();
             str = "";
             int next_x = next_pos.get(next)[0];
             int next_y = next_pos.get(next)[1];
-            if(next_x >= 0 && next_y >=0){
-                if(next_x < x )
+            if (next_x >= 0 && next_y >= 0) {
+                if (next_x < x)
                     str = "TOP";
-                else if(next_x > x )
+                else if (next_x > x)
                     str = "BOTTOM";
-                else if(next_y > y )
+                else if (next_y > y)
                     str = "RIGHT";
-                else if(next_y < y )
+                else if (next_y < y)
                     str = "LEFT";
             }
             // Remove da Lista o caminho já escolhido
             next_pos.remove(next);
 
             // Verifica se é possível seguir para o lado sorteado
-            if(next_x >= 0 && next_x < size && next_y >= 0 && next_y < size && vis[next_x][next_y] == 0){
+            if (next_x >= 0 && next_x < size && next_y >= 0 && next_y < size && vis[next_x][next_y] == 0) {
                 // Abre o caminho no labirinto
-                int temp_x = next_x*2+1, temp_y = next_y*2+1;
+                int temp_x = next_x * 2 + 1, temp_y = next_y * 2 + 1;
                 switch (str) {
                     case "TOP":
                         L[temp_x + 1][temp_y] = ' ';
@@ -190,38 +252,16 @@ public class Labirinth {
                         L[temp_x - 1][temp_y] = ' ';
                         break;
                     case "RIGHT":
-                        L[temp_x][temp_y-1] = ' ';
+                        L[temp_x][temp_y - 1] = ' ';
                         break;
                     case "LEFT":
-                        L[temp_x][temp_y+1] = ' ';
+                        L[temp_x][temp_y + 1] = ' ';
                         break;
                 }
-                // Chamada recursiva para o próximo 
+                // Chamada recursiva para o próximo
                 walk(next_x, next_y, vis, new LinkedList<int[]>());
             }
         }
-        return vis;
+        return;
     }
-
-    public char[][] getLabirinth() {
-        return L;
-    }
-    public int[] getStart() {
-        return xy_start;
-    }
-    public int[] getFinish() {
-        return xy_finish;
-    }
-    public int getLen() {
-        return len;
-    }
-
-    public void printLabirinth() {
-        for (int i = 0; i < len; i++) {
-            for (int j = 0; j < len; j++) {
-                System.out.print(L[i][j]);
-            }
-            System.out.println();
-        }
-    }    
 }
