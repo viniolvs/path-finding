@@ -11,6 +11,7 @@ public class App {
         int h1, h2;
         System.out.println("\nLABIRINTO");
         L.printLabirinth();
+        System.out.println("Tamanho do labirinto = " + size);
 
         System.out.println("\nCaminho encontrado pela busca em profundidade");
         h1 = L.findPath();
