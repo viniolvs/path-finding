@@ -4,8 +4,8 @@ import java.util.Random;
 public class Labirinth {
     private char[][] L; // Matriz que contém o labirinto
     private char[][] path; // Matriz que contém o labirinto solucionado
-    private int[] xy_start; // Coordenada da entrada do labirinto
-    private int[] xy_finish; // Coordenada da saída do labirinto
+    private Point start; // Coordenada da entrada do labirinto
+    private Point finish; // Coordenada da saída do labirinto
     private int size; // Tamanho do labirinto
     private int len; // Tamanho da matriz que representa o labirinto
     private PathFinder pathFinder;
@@ -13,8 +13,8 @@ public class Labirinth {
     public Labirinth(int size) {
         this.size = size;
         this.len = size * 2 + 1;
-        xy_start = new int[2];
-        xy_finish = new int[2];
+        start = new Point();
+        finish = new Point();
         // Matriz com tamanho necessário para marcar paredes do labirinto
         L = new char[len][len];
         path = new char[len][len];
@@ -40,12 +40,12 @@ public class Labirinth {
         return path;
     }
 
-    public int[] getStart() {
-        return xy_start;
+    public Point getStart() {
+        return start;
     }
 
-    public int[] getFinish() {
-        return xy_finish;
+    public Point getFinish() {
+        return finish;
     }
 
     public int getLen() {
@@ -145,8 +145,8 @@ public class Labirinth {
                 temp_y = 0;
                 break;
         }
-        this.xy_start[0] = temp_x;
-        this.xy_start[1] = temp_y;
+        this.start.setX(temp_x);
+        this.start.setY(temp_y);
         // Marca a entrada no labirinto
         L[temp_x][temp_y] = 'e';
 
@@ -179,44 +179,21 @@ public class Labirinth {
                 y2 = 0;
                 break;
         }
-        this.xy_finish[0] = x2;
-        this.xy_finish[1] = y2;
+        this.finish.setX(x2);
+        this.finish.setY(y2);
         // Marca a saída no labirinto
         L[x2][y2] = 's';
 
         int[][] vis = new int[size][size];
-        walk((x - 1) / 2, (y - 1) / 2, vis, new LinkedList<int[]>());
+        walk(new Point((x - 1) / 2, (y - 1) / 2), vis, new LinkedList<Point>());
         restartPath();
     }
 
     // Abre os caminhos no labirinto utilizando busca em profundidade aleatória
-    private void walk(int x, int y, int[][] vis, LinkedList<int[]> next_pos) {
-        vis[x][y] = 1;
+    private void walk(Point p, int[][] vis, LinkedList<Point> next_pos) {
+        vis[p.getX()][p.getY()] = 1;
         // Adiciona todas as possibilidades de movimentaçao em uma Lista
-        for (int i = 0; i < 4; i++) {
-            int[] xy = new int[2];
-            xy[0] = x;
-            xy[1] = y;
-            switch (i) {
-                // TOP
-                case 0:
-                    xy[0] = x - 1;
-                    break;
-                // RIGHT
-                case 1:
-                    xy[1] = y + 1;
-                    break;
-                // BOTTOM
-                case 2:
-                    xy[0] = x + 1;
-                    break;
-                // LEFT
-                case 3:
-                    xy[1] = y - 1;
-                    break;
-            }
-            next_pos.push(xy);
-        }
+        next_pos = Point.getNeighbors(p);
 
         Random random = new Random();
         while (next_pos.size() > 0) {
@@ -225,16 +202,16 @@ public class Labirinth {
             // Verifica o lado que a busca continuará
             String str = new String();
             str = "";
-            int next_x = next_pos.get(next)[0];
-            int next_y = next_pos.get(next)[1];
+            int next_x = next_pos.get(next).getX();
+            int next_y = next_pos.get(next).getY();
             if (next_x >= 0 && next_y >= 0) {
-                if (next_x < x)
+                if (next_x < p.getX())
                     str = "TOP";
-                else if (next_x > x)
+                else if (next_x > p.getX())
                     str = "BOTTOM";
-                else if (next_y > y)
+                else if (next_y > p.getY())
                     str = "RIGHT";
-                else if (next_y < y)
+                else if (next_y < p.getY())
                     str = "LEFT";
             }
             // Remove da Lista o caminho já escolhido
@@ -259,7 +236,7 @@ public class Labirinth {
                         break;
                 }
                 // Chamada recursiva para o próximo
-                walk(next_x, next_y, vis, new LinkedList<int[]>());
+                walk(new Point(next_x, next_y), vis, new LinkedList<Point>());
             }
         }
         return;
