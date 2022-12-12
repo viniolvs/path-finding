@@ -19,7 +19,7 @@ public class Astar extends PathFinder {
     
     
     public int find() {
-        aStar(start, new LinkedList<Point>());
+        aStar(start);
         int heuristica = 0;
         for (int i = 0; i < len; i++) {
             for (int j = 0; j < len; j++) {
@@ -31,31 +31,31 @@ public class Astar extends PathFinder {
     }
     
     // Implementação do método A*
-    private void aStar(Point p, LinkedList<Point> path) {
-        // Marca o caminho no labirinto
-        L[p.getX()][p.getY()] = 'o';
-        // Verifica se encontrou a saída
-        if (p.getX() == finish.getX() && p.getY() == finish.getY())
-            return;
+    private void aStar(Point p) {
+        LinkedList<Point> path = new LinkedList<Point>();
+        while(p.getX() != finish.getX() || p.getY() != finish.getY()){
+            L[p.getX()][p.getY()] = 'o';
 
-        LinkedList<Point> temp = new LinkedList<Point>();
-        temp = Point.getNeighbors(p);
-        // Elimina os pontos que não podem ser acessados e calcula o custo f para os pontos válidos
-        for (int i = 0; i < temp.size(); i++) {
-            if (temp.get(i).getX() >= 0 && temp.get(i).getX() < len && temp.get(i).getY() >= 0 && temp.get(i).getY() < len
-            && (L[temp.get(i).getX()][temp.get(i).getY()] == ' ' || L[temp.get(i).getX()][temp.get(i).getY()] == 's')){
-                temp.get(i).setfCost(fCost(temp.get(i)));
-                path.push(temp.get(i));
+            LinkedList<Point> temp = new LinkedList<Point>();
+            temp = Point.getNeighbors(p);
+            // Elimina os pontos que não podem ser acessados e calcula o custo f para os pontos válidos
+            for (int i = 0; i < temp.size(); i++) {
+                if (temp.get(i).getX() >= 0 && temp.get(i).getX() < len && temp.get(i).getY() >= 0 && temp.get(i).getY() < len
+                && (L[temp.get(i).getX()][temp.get(i).getY()] == ' ' || L[temp.get(i).getX()][temp.get(i).getY()] == 's')){
+                    temp.get(i).setfCost(fCost(temp.get(i)));
+                    path.push(temp.get(i));
+                }
+            }
+            if(path.size() > 0){
+                // Remove o ponto atual da lista
+                path.remove(p);
+                // Procura o próximo ponto com menor custo f
+                Point next = path.get(getNextIndex(path));
+                // Continua para o próximo ponto
+                p = next;
             }
         }
-        if(path.size() > 0){
-            // Procura o próximo ponto com menor custo f
-            Point next = path.get(getNextIndex(path));
-            // Remove o ponto atual da lista
-            path.remove(p);
-            // Continua para o próximo ponto
-            aStar(next, path);
-        }
+        L[p.getX()][p.getY()] = 'o';
     }
 
     // Procura pelo ponto com menor custo f na lista 
