@@ -19,23 +19,37 @@ public class Astar extends PathFinder {
     
     
     public int find() {
-        aStar(start);
-        int heuristica = 0;
+        aStar(start, 0);
+        return heuristic();
+    }
+
+    public int find(int ms) {
+        aStar(start, ms);
+        return heuristic();
+    }
+
+    public int heuristic() {
+        int steps = 0;
         for (int i = 0; i < len; i++) {
             for (int j = 0; j < len; j++) {
                 if (L[i][j] == 'o')
-                heuristica++;
+                steps++;
             }
         }
-        return heuristica;
+        return steps;
     }
     
     // Implementação do método A*
-    private void aStar(Point p) {
+    private void aStar(Point p, int ms) {
         LinkedList<Point> path = new LinkedList<Point>();
         while(p.getX() != finish.getX() || p.getY() != finish.getY()){
             L[p.getX()][p.getY()] = 'o';
-
+            if(ms > 0){
+                Labirinth.clearScreen();
+                System.out.println("A*\n");
+                Labirinth.printLabirinth(L, len);
+                Labirinth.pause(ms);
+            }
             LinkedList<Point> temp = new LinkedList<Point>();
             temp = Point.getNeighbors(p);
             // Elimina os pontos que não podem ser acessados e calcula o custo f para os pontos válidos
@@ -56,6 +70,13 @@ public class Astar extends PathFinder {
             }
         }
         L[p.getX()][p.getY()] = 'o';
+        if(ms > 0){
+            Labirinth.clearScreen();
+            System.out.println("A*\n");
+            Labirinth.printLabirinth(L, len);
+            Labirinth.pause(ms);
+        }
+        return;
     }
 
     // Procura pelo ponto com menor custo f na lista 

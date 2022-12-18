@@ -10,6 +10,17 @@ public class Labirinth {
     private int len; // Tamanho da matriz que representa o labirinto
     private PathFinder pathFinder;
 
+    public Labirinth(Labirinth L){
+        this.L = L.getLabirinth();
+        this.start = L.getStart();
+        this.finish = L.getFinish();
+        this.size = L.getSize();
+        this.len = L.getLen();
+        pathFinder = new DepthSearch(this);
+        path = new char[len][len];
+        restartPath();
+    };
+
     public Labirinth(int size) {
         this.size = size;
         this.len = size * 2 + 1;
@@ -21,7 +32,6 @@ public class Labirinth {
         //Algoritmo solucionador padrão
         pathFinder = new DepthSearch(this);
         genLabirinth();
-
     }
 
     public void setPathFinder(PathFinder pathFinder) {
@@ -30,6 +40,10 @@ public class Labirinth {
 
     public int findPath() {
         return pathFinder.find();
+    }
+
+    public int findPath(int ms) {
+        return pathFinder.find(ms);
     }
 
     public char[][] getLabirinth() {
@@ -46,6 +60,10 @@ public class Labirinth {
 
     public Point getFinish() {
         return finish;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public int getLen() {
@@ -68,6 +86,26 @@ public class Labirinth {
             }
             System.out.println();
         }
+    }
+
+    public static void printLabirinth(char[][] L, int len) {
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                System.out.print(L[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void clearScreen() {  
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
+    }
+
+    public static void pause(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception e) {}
     }
 
     public void printPath() {
