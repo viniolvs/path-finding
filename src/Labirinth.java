@@ -9,6 +9,9 @@ public class Labirinth {
     private int size; // Tamanho do labirinto
     private int len; // Tamanho da matriz que representa o labirinto
     private PathFinder pathFinder;
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED_BACKGROUND = "\u001B[41m"; 
+    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
 
     public Labirinth(Labirinth L){
         this.L = L.getLabirinth();
@@ -82,7 +85,10 @@ public class Labirinth {
     public void printLabirinth() {
         for (int i = 0; i < len; i++) {
             for (int j = 0; j < len; j++) {
-                System.out.print(L[i][j]);
+                if(L[i][j] == '|' || L[i][j] == '+' || L[i][j] == '-' || L[i][j] == 'X')
+                    System.out.print(ANSI_RED_BACKGROUND + L[i][j] + ANSI_RESET);
+                else
+                    System.out.print(L[i][j]);
             }
             System.out.println();
         }
@@ -91,7 +97,12 @@ public class Labirinth {
     public static void printLabirinth(char[][] L, int len) {
         for (int i = 0; i < len; i++) {
             for (int j = 0; j < len; j++) {
-                System.out.print(L[i][j]);
+                if(L[i][j] == '|' || L[i][j] == '+' || L[i][j] == '-' || L[i][j] == 'X')
+                    System.out.print(ANSI_RED_BACKGROUND + L[i][j] + ANSI_RESET);
+                else if(L[i][j] == 'o')
+                    System.out.print(ANSI_GREEN_BACKGROUND + L[i][j] + ANSI_RESET);
+                else
+                    System.out.print(L[i][j]);
             }
             System.out.println();
         }
@@ -111,7 +122,12 @@ public class Labirinth {
     public void printPath() {
         for (int i = 0; i < len; i++) {
             for (int j = 0; j < len; j++) {
-                System.out.print(path[i][j]);
+                if(path[i][j] == '|' || path[i][j] == '+' || path[i][j] == '-' || path[i][j] == 'X')
+                    System.out.print(ANSI_RED_BACKGROUND + path[i][j] + ANSI_RESET);
+                else if(path[i][j] == 'o')
+                    System.out.print(ANSI_GREEN_BACKGROUND + path[i][j] + ANSI_RESET);
+                else
+                    System.out.print(path[i][j]);
             }
             System.out.println();
         }

@@ -20,7 +20,7 @@ public class App {
         Labirinth.clearScreen();
 
         String message = "";
-        int ms = 1000;
+        int ms = 0;
         Labirinth L = new Labirinth(size);        
 
         if (method == 0) {
